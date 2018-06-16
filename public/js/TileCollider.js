@@ -10,16 +10,16 @@ export default class TileCollider {
         let x;
 
         if (entity.vel.x > 0) {
-            x = entity.pos.x + entity.size.x;
+            x = entity.bounds.right;
         } else if (entity.vel.x < 0) {
-            x = entity.pos.x;
+            x = entity.bounds.left;
         } else {
             return;
         }
 
         const matches = this.tiles.serchByRange(
             x, x,
-            entity.pos.y, entity.pos.y + entity.size.y
+            entity.bounds.top, entity.bounds.bottom
         );
 
         matches.forEach(match => {
@@ -28,14 +28,18 @@ export default class TileCollider {
             }
     
             if (entity.vel.x > 0) {
-                if (entity.pos.x + entity.size.x > match.x1) {
-                    entity.pos.x = match.x1 - entity.size.x;
+                if (entity.bounds.right > match.x1) {
+                    entity.bounds.left = match.x1 - entity.size.x;
                     entity.vel.x = 0;
+
+                    entity.obstruct(Sides.RIGHT);
                 }
             } else if (entity.vel.x < 0) {
-                if (entity.pos.x < match.x2) {
-                    entity.pos.x = match.x2;
+                if (entity.bounds.left < match.x2) {
+                    entity.bounds.left = match.x2;
                     entity.vel.x = 0;
+
+                    entity.obstruct(Sides.LEFT);
                 }
             }
         });
@@ -45,15 +49,15 @@ export default class TileCollider {
         let y;
 
         if (entity.vel.y > 0) {
-            y = entity.pos.y + entity.size.y;
+            y = entity.bounds.bottom;
         } else if (entity.vel.y < 0) {
-            y = entity.pos.y;
+            y = entity.bounds.top;
         } else {
             return;
         }
 
         const matches = this.tiles.serchByRange(
-            entity.pos.x, entity.pos.x + entity.size.x,
+            entity.bounds.left, entity.bounds.right,
             y, y
         );
 
@@ -63,15 +67,15 @@ export default class TileCollider {
             }
     
             if (entity.vel.y > 0) {
-                if (entity.pos.y + entity.size.y > match.y1) {
-                    entity.pos.y = match.y1 - entity.size.y;
+                if (entity.bounds.bottom > match.y1) {
+                    entity.bounds.top = match.y1 - entity.size.y;
                     entity.vel.y = 0;
 
                     entity.obstruct(Sides.BOTTOM);
                 }
             } else if (entity.vel.y < 0) {
-                if (entity.pos.y < match.y2) {
-                    entity.pos.y = match.y2;
+                if (entity.bounds.top < match.y2) {
+                    entity.bounds.top = match.y2;
                     entity.vel.y = 0;
 
                     entity.obstruct(Sides.TOP);
