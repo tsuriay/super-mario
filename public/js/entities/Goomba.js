@@ -1,25 +1,56 @@
-import Entity, {Sides} from '../Entity.js';
-import PendulumWalk from '../traits/PendulumWalk.js';
+import Entity, {Sides, Trait} from '../Entity.js';
+import PendulumMove from '../traits/PendulumMove.js';
+import Killable from '../traits/Killable.js';
 import {loadSpriteSheet} from '../loaders.js';
-
 
 export function loadGoomba() {
 	return loadSpriteSheet('goomba')
 		.then(createGoombaFactory);
 };
 
+class Behaivor extends Trait {
+	constructor() {
+		super('behaivor')
+	}
+
+	collides(us, them) {
+		if (us.killable.dead) {
+			return;
+		}
+
+		if (them.stomper) {
+			if (them.vel.y > us.vel.y) {
+				us.killable.kill();
+				us.pendulumMove.speed = 0;
+			} else {
+				them.killable.kill();
+			}	
+		}
+	}
+}
+
 function createGoombaFactory(sprite) {
 	const walkAnimation = sprite.animations.get('walk');
 
+	function routeAnim(goomba) {
+		if (goomba.killable.dead) {
+			return 'flat';
+		}
+
+		return walkAnimation(goomba.lifetime);
+	}
+
 	function drawGoomba(context) {
-		sprite.draw(walkAnimation(this.lifetime), context, 0, 0);
+		sprite.draw(routeAnim(this), context, 0, 0);
 	}
 
 	return function createGoomba() {
 		const goomba = new Entity();
 		goomba.size.set(16, 16);
 
-		goomba.addTrait(new PendulumWalk());
+		goomba.addTrait(new PendulumMove());
+		goomba.addTrait(new Behaivor());
+		goomba.addTrait(new Killable());
 
 		goomba.draw = drawGoomba;
 
