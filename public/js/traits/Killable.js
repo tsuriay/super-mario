@@ -1,4 +1,4 @@
-import {Trait, Sides} from '../Entity.js';
+import {Trait} from '../Entity.js';
 
 export default class Killable extends Trait {
 	constructor() {
@@ -17,7 +17,7 @@ export default class Killable extends Trait {
 		this.deadTime = 0;
 	}
 
-	update(entity, deltaTime, level) {
+	update(entity, {deltaTime}, level) {
 		if (this.dead) {
 			this.deadTime += deltaTime;
 

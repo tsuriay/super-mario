@@ -1,7 +1,6 @@
 import SpriteSheet from './SpriteSheet.js';
 import {createAnimation} from './animation.js';
 
-
 export function loadImage(url) {
 	return new Promise(resolve => {
 		const image = new Image();
@@ -14,7 +13,7 @@ export function loadImage(url) {
 
 export function loadJSON(url) {
 	return fetch(url)
-	.then(res => res.json());
+		.then(res => res.json());
 };
 
 export function loadSpriteSheet(name) {
